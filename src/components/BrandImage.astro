@@ -1,24 +1,34 @@
 ---
 /**
- * Renders a brand photo asset, or a palette-colored placeholder (gradient of
- * primary -> dark with the brand initial) when the file is missing.
+ * Renders a brand photo via Astro's <Image> (optimized to WebP at display
+ * size), or a palette-colored placeholder (gradient of primary -> dark with
+ * the brand initial) when the file is missing.
  */
+import { Image } from "astro:assets";
 import { brand } from "@/lib/brand";
-import { asset, type BrandAsset } from "@/lib/assets";
+import { img, type RasterAsset } from "@/lib/assets";
 
 interface Props {
-  file: Extract<BrandAsset, "hero.jpg" | "secondary.jpg">;
+  file: Extract<RasterAsset, "hero.png" | "secondary.png">;
   alt?: string;
   class?: string;
+  width?: number;
 }
-const { file, alt = "", class: className = "" } = Astro.props;
-const src = asset(file);
+const { file, alt = "", class: className = "", width = 900 } = Astro.props;
+const meta = img(file);
 const initial = brand.name.charAt(0);
 ---
 
 {
-  src ? (
-    <img src={src} alt={alt} class={`object-cover ${className}`} loading="lazy" />
+  meta ? (
+    <Image
+      src={meta}
+      alt={alt}
+      width={width}
+      format="webp"
+      quality={72}
+      class={`object-cover ${className}`}
+    />
   ) : (
     <div
       class={`grid place-items-center ${className}`}

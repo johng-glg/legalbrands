@@ -4,14 +4,14 @@
  * still reads on-brand (primary color, headline font).
  */
 import { brand } from "@/lib/brand";
-import { asset } from "@/lib/assets";
+import { svgUrl } from "@/lib/assets";
 
 interface Props {
   class?: string;
   reverse?: boolean; // for dark backgrounds
 }
 const { class: className = "", reverse = false } = Astro.props;
-const logo = asset("logo.svg");
+const logo = svgUrl("logo.svg");
 ---
 
 {

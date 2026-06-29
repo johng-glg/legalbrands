@@ -1,24 +1,37 @@
 /**
- * Resolves per-brand assets from /src/brands/<slug>/. Returns a hashed URL
- * Astro will emit, or null when the file is missing (callers render a
- * palette placeholder instead). See ASSETS.md for what to replace.
+ * Resolves per-brand assets from /src/brands/<slug>/. Rasters return Astro
+ * `ImageMetadata` so callers optimize them at build time via <Image>/getImage
+ * (emitting WebP at display size). The logo is an SVG, returned as a raw URL
+ * (SVGs aren't raster-optimized). Returns null when the file is missing so
+ * callers can fall back to a palette placeholder. See ASSETS.md.
  */
+import type { ImageMetadata } from "astro";
 import { ACTIVE_BRAND } from "./brand";
 
-const urls = import.meta.glob("/src/brands/**/*.{svg,png,jpg,jpeg,webp}", {
-  eager: true,
-  query: "?url",
-  import: "default",
-}) as Record<string, string>;
+const rasters = import.meta.glob<ImageMetadata>(
+  "/src/brands/**/*.{png,jpg,jpeg,webp}",
+  { eager: true, import: "default" },
+);
+const svgs = import.meta.glob<string>(
+  "/src/brands/**/*.svg",
+  { eager: true, query: "?url", import: "default" },
+);
 
-export type BrandAsset =
-  | "logo.svg"
+export type RasterAsset =
+  | "hero.png"
+  | "secondary.png"
   | "og.png"
-  | "hero.jpg"
-  | "secondary.jpg"
-  | "texture.svg";
+  | "texture-1.png"
+  | "texture-2.png"
+  | "texture-3.png";
+export type SvgAsset = "logo.svg";
 
-export function asset(file: BrandAsset): string | null {
-  const key = `/src/brands/${ACTIVE_BRAND}/${file}`;
-  return urls[key] ?? null;
+/** Optimizable raster (ImageMetadata) for <Image>/getImage, or null if missing. */
+export function img(file: RasterAsset): ImageMetadata | null {
+  return rasters[`/src/brands/${ACTIVE_BRAND}/${file}`] ?? null;
+}
+
+/** Raw URL for the brand SVG logo (SVGs aren't raster-optimized), or null. */
+export function svgUrl(file: SvgAsset): string | null {
+  return svgs[`/src/brands/${ACTIVE_BRAND}/${file}`] ?? null;
 }

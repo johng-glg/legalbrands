@@ -2,7 +2,12 @@
 /**
  * Generic section wrapper for consistent rhythm. `tone` switches the surface:
  * 'light' (default), 'tint' (faint primary wash), or 'dark' (reverse).
+ * `texture` overlays the brand's texture-1 as a very faint section background
+ * (optimized to WebP) — kept low-contrast so copy always reads over it.
  */
+import { getImage } from "astro:assets";
+import { img } from "@/lib/assets";
+
 interface Props {
   eyebrow?: string;
   title?: string;
@@ -10,8 +15,9 @@ interface Props {
   tone?: "light" | "tint" | "dark";
   id?: string;
   class?: string;
+  texture?: boolean;
 }
-const { eyebrow, title, intro, tone = "light", id, class: className = "" } = Astro.props;
+const { eyebrow, title, intro, tone = "light", id, class: className = "", texture = false } = Astro.props;
 
 const bg =
   tone === "dark"
@@ -21,10 +27,22 @@ const bg =
       : "background-color:var(--c-light)";
 const titleColor = tone === "dark" ? "var(--c-light)" : "var(--c-dark)";
 const introColor = tone === "dark" ? "color-mix(in srgb, var(--c-light) 80%, transparent)" : "var(--c-supporting)";
+
+const texMeta = texture ? img("texture-1.png") : null;
+const texGen = texMeta ? await getImage({ src: texMeta, width: 1600, format: "webp" }) : null;
+const texOpacity = tone === "dark" ? 0.1 : 0.07;
 ---
 
-<section id={id} class={`py-16 md:py-24 ${className}`} style={bg}>
-  <div class="container-rail">
+<section id={id} class={`relative overflow-hidden py-16 md:py-24 ${className}`} style={bg}>
+  {texGen && (
+    <div
+      class="pointer-events-none absolute inset-0"
+      aria-hidden="true"
+      style={`background-image:url(${texGen.src});background-size:cover;background-position:center;opacity:${texOpacity}`}
+    >
+    </div>
+  )}
+  <div class="container-rail relative">
     {(eyebrow || title || intro) && (
       <div class="max-w-3xl mb-12">
         {eyebrow && <p class="eyebrow">{eyebrow}</p>}
