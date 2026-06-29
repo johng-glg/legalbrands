@@ -1,0 +1,41 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/Section.astro";
+import LeadForm from "@/components/LeadForm.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("resources", ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <Section>
+    <article class="mx-auto max-w-2xl">
+      <p class="text-sm font-head font-semibold uppercase tracking-wider" style="color:var(--c-primary)">
+        {post.data.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+      </p>
+      <h1 class="mt-2 text-[clamp(2rem,4.5vw,3rem)] font-extrabold" style="color:var(--c-dark)">{post.data.title}</h1>
+      <div class="prose-body mt-8 leading-relaxed" style="color:var(--c-dark)">
+        <Content />
+      </div>
+    </article>
+  </Section>
+  <Section tone="tint">
+    <div class="mx-auto max-w-2xl">
+      <LeadForm />
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .prose-body :global(h2) { font-size: 1.4rem; margin: 1.6rem 0 0.6rem; }
+  .prose-body :global(p) { margin: 0.8rem 0; }
+  .prose-body :global(ol), .prose-body :global(ul) { margin: 0.8rem 0 0.8rem 1.2rem; list-style: revert; }
+  .prose-body :global(li) { margin: 0.3rem 0; }
+  .prose-body :global(em) { color: var(--c-supporting); }
+</style>

@@ -1,0 +1,33 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/Section.astro";
+import { getCollection } from "astro:content";
+import { brand } from "@/lib/brand";
+
+const posts = (await getCollection("resources", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<BaseLayout title="Resources" description={`Guides and answers from ${brand.name}.`}>
+  <Section eyebrow="Resources" title="Guides, rights, and what to expect">
+    {posts.length === 0 ? (
+      <p style="color:var(--c-supporting)">Articles coming soon.</p>
+    ) : (
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {posts.map((p) => (
+          <li class="rounded-2xl p-7" style="background-color:color-mix(in srgb, var(--c-primary) 6%, var(--c-light)); border:1px solid color-mix(in srgb, var(--c-supporting) 16%, transparent)">
+            <p class="text-xs font-head font-semibold uppercase tracking-wider" style="color:var(--c-primary)">
+              {p.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            </p>
+            <h2 class="mt-2 text-xl font-bold" style="color:var(--c-dark)">
+              <a href={`/resources/${p.id}`} class="hover:opacity-70">{p.data.title}</a>
+            </h2>
+            <p class="mt-2 text-[0.95rem]" style="color:var(--c-supporting)">{p.data.description}</p>
+            <a href={`/resources/${p.id}`} class="mt-4 inline-block font-head font-semibold text-sm" style="color:var(--c-primary)">Read →</a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </Section>
+</BaseLayout>

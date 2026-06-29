@@ -1,0 +1,51 @@
+---
+/**
+ * Attorney-led process. Generic four-step flow, themed per brand. Compact
+ * variant (showcase on home) vs full (dedicated page) via `full` prop.
+ */
+import { brand } from "@/lib/brand";
+import Section from "@/components/Section.astro";
+
+interface Props { full?: boolean }
+const { full = false } = Astro.props;
+
+const steps = [
+  {
+    n: "01",
+    title: "Talk to a real attorney — free",
+    body: "Tell us what's happening. A licensed attorney reviews your situation and tells you, plainly, what your options are. No pressure, no sales script.",
+  },
+  {
+    n: "02",
+    title: "We take over collector contact",
+    body: "Once we represent you, collectors come to us — not you. We field the calls and the letters so you can stop bracing for the phone.",
+  },
+  {
+    n: "03",
+    title: "We build your strategy",
+    body: "Your attorney builds a plan around your debt and your goals — settlement, defense, or counterclaims where the collector broke the law.",
+  },
+  {
+    n: "04",
+    title: "We see it through",
+    body: "We handle the work end to end, including defending you in court if you're sued — and keep you informed in plain language the whole way.",
+  },
+];
+---
+
+<Section
+  eyebrow="How it works"
+  title="An attorney takes it off your plate"
+  intro={`Real lawyers handle your file from the first call. Here's how working with ${brand.name} goes.`}
+  tone="tint"
+>
+  <ol class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    {(full ? steps : steps).map((s) => (
+      <li class="rounded-2xl p-7" style="background-color:var(--c-light); border:1px solid color-mix(in srgb, var(--c-supporting) 18%, transparent)">
+        <span class="font-head font-extrabold text-3xl" style="color:var(--c-primary)">{s.n}</span>
+        <h3 class="mt-3 text-xl font-bold" style="color:var(--c-dark)">{s.title}</h3>
+        <p class="mt-2 text-[0.97rem] leading-relaxed" style="color:var(--c-supporting)">{s.body}</p>
+      </li>
+    ))}
+  </ol>
+</Section>

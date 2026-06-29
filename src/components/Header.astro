@@ -1,0 +1,42 @@
+---
+import BrandLogo from "@/components/BrandLogo.astro";
+import Button from "@/components/Button.astro";
+
+const phone = import.meta.env.PUBLIC_INTAKE_PHONE;
+const consult = import.meta.env.PUBLIC_CONSULT_URL;
+
+const nav = [
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/who-we-help", label: "Who we help" },
+  { href: "/why-us", label: "Why us" },
+  { href: "/results", label: "Results" },
+  { href: "/resources", label: "Resources" },
+];
+---
+
+<header class="border-b" style="border-color:color-mix(in srgb, var(--c-supporting) 22%, transparent)">
+  <div class="container-rail flex items-center justify-between gap-6 py-4">
+    <a href="/" class="shrink-0" aria-label="Home">
+      <BrandLogo />
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-7 font-head font-medium text-[0.95rem]">
+      {nav.map((i) => (
+        <a href={i.href} class="hover:opacity-70 transition-opacity" style="color:var(--c-dark)">
+          {i.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-4">
+      {phone && (
+        <a href={`tel:${phone}`} class="hidden sm:inline font-head font-semibold" style="color:var(--c-primary)">
+          {phone}
+        </a>
+      )}
+      <Button href={consult || "/contact"} variant="accent" class="!px-5 !py-2.5 text-sm">
+        Free consult
+      </Button>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,20 @@
+{
+  "name": "glg-multibrand-site",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Multi-brand law-firm marketing site system. One codebase, themed per brand from brands.config.ts via the BRAND env var.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "gen:assets": "node scripts/gen-assets.mjs",
+    "check:hardcode": "node scripts/check-hardcode.mjs"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.5",
+    "astro": "^5.13.0",
+    "tailwindcss": "^3.4.17"
+  }
+}

@@ -1,0 +1,54 @@
+---
+/**
+ * Results / credibility. Courtroom-credibility module, weighted by family:
+ * empowerment brands get the heavier stat-forward treatment; peace brands get
+ * a lighter, trust-led version. Stats are placeholders flagged in ASSETS.md.
+ */
+import { brand, isEmpowerment } from "@/lib/brand";
+import Section from "@/components/Section.astro";
+
+// Placeholder credibility figures — replace with approved firm numbers.
+const stats = [
+  { value: "Licensed", label: "attorneys on every file" },
+  { value: "Trial-ready", label: "litigators, not a call center" },
+  { value: "FDCPA", label: "leverage where collectors break the law" },
+  { value: "Free", label: "consultation to start" },
+];
+---
+
+<Section
+  eyebrow="Results & credibility"
+  title={isEmpowerment ? "A firm that will actually litigate" : "Real legal help you can trust"}
+  intro={
+    isEmpowerment
+      ? "When collectors expect you to fold, courtroom credibility is the difference. Here's what stands behind your case."
+      : "Calm, honest, attorney-led help — and the legal standing to back it up."
+  }
+>
+  {
+    isEmpowerment ? (
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((s) => (
+          <div class="rounded-2xl p-7 text-center" style="background-color:var(--c-dark)">
+            <p class="font-head font-extrabold text-2xl" style="color:var(--c-accent)">{s.value}</p>
+            <p class="mt-2 text-sm" style="color:color-mix(in srgb, var(--c-light) 80%, transparent)">{s.label}</p>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="grid gap-6 md:grid-cols-3">
+        {stats.slice(0, 3).map((s) => (
+          <div class="rounded-2xl p-7"
+            style="background-color:color-mix(in srgb, var(--c-primary) 7%, var(--c-light)); border:1px solid color-mix(in srgb, var(--c-supporting) 16%, transparent)">
+            <p class="font-head font-bold text-lg" style="color:var(--c-primary)">{s.value}</p>
+            <p class="mt-1.5 text-sm" style="color:var(--c-supporting)">{s.label}</p>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  <p class="mt-8 text-sm" style="color:var(--c-supporting)">
+    Attorney advertising. Prior results do not guarantee a similar outcome. {brand.name} is a law firm; an attorney-client relationship is formed only by a signed agreement.
+  </p>
+</Section>

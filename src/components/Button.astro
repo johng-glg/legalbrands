@@ -1,0 +1,26 @@
+---
+/**
+ * CTA button. The `accent` variant is the ONLY place the brand accent color
+ * is allowed to surface (dominance rule: accent reserved for CTAs).
+ */
+interface Props {
+  href?: string;
+  variant?: "accent" | "primary" | "outline";
+  class?: string;
+  id?: string;
+}
+const { href, variant = "accent", class: className = "", id } = Astro.props;
+const cls = `btn btn-${variant} ${className}`;
+---
+
+{
+  href ? (
+    <a href={href} id={id} class={cls}>
+      <slot />
+    </a>
+  ) : (
+    <button id={id} class={cls} type="button">
+      <slot />
+    </button>
+  )
+}

@@ -1,0 +1,50 @@
+---
+import { brand } from "@/lib/brand";
+import BrandLogo from "@/components/BrandLogo.astro";
+
+const year = new Date().getFullYear();
+const phone = import.meta.env.PUBLIC_INTAKE_PHONE;
+
+// Parent disclosure is intentionally NOT surfaced by default (see brands.config.ts).
+// Flip PUBLIC_SHOW_PARENT=true to expose it in the clearly-marked slot below.
+const showParent = import.meta.env.PUBLIC_SHOW_PARENT === "true";
+---
+
+<footer class="mt-auto" style="background-color:var(--c-dark)">
+  <div class="container-rail py-14 text-sm" style="color:color-mix(in srgb, var(--c-light) 78%, transparent)">
+    <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div>
+        <BrandLogo reverse class="mb-4" />
+        <p class="max-w-sm leading-relaxed">{brand.oneLiner}</p>
+        {phone && (
+          <a href={`tel:${phone}`} class="mt-4 inline-block font-head font-semibold" style="color:var(--c-light)">
+            {phone}
+          </a>
+        )}
+      </div>
+
+      <nav class="flex flex-col gap-2.5">
+        <span class="font-head font-semibold mb-1" style="color:var(--c-light)">Firm</span>
+        <a href="/how-it-works" class="hover:opacity-80">How it works</a>
+        <a href="/who-we-help" class="hover:opacity-80">Who we help</a>
+        <a href="/why-us" class="hover:opacity-80">Why us</a>
+        <a href="/results" class="hover:opacity-80">Results</a>
+      </nav>
+
+      <nav class="flex flex-col gap-2.5">
+        <span class="font-head font-semibold mb-1" style="color:var(--c-light)">Get started</span>
+        <a href="/contact" class="hover:opacity-80">Free consultation</a>
+        <a href="/resources" class="hover:opacity-80">Resources</a>
+      </nav>
+    </div>
+
+    <div class="mt-12 pt-6 flex flex-col sm:flex-row justify-between gap-3"
+      style="border-top:1px solid color-mix(in srgb, var(--c-light) 16%, transparent)">
+      <p>© {year} {brand.name}. Attorney advertising. Prior results do not guarantee a similar outcome.</p>
+
+      {/* ===== PARENT DISCLOSURE SLOT — off by default; do not surface without sign-off ===== */}
+      {showParent && <p>A {brand.parent} firm.</p>}
+      {/* ================================================================================== */}
+    </div>
+  </div>
+</footer>

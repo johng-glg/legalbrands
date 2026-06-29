@@ -1,0 +1,55 @@
+---
+/**
+ * Renders `pillars` (title / meaning / proof). When a brand ships with an
+ * empty pillars[] it falls back to a voice-driven value block built from
+ * voiceWeAre / voiceWeAreNot — flagged for copy fill.
+ */
+import { brand, hasPillars } from "@/lib/brand";
+import Section from "@/components/Section.astro";
+---
+
+<Section
+  eyebrow="Why us"
+  title="What you get with real attorneys"
+  intro={`${brand.name} is a law firm — not a settlement company or a call-center program.`}
+  tone="dark"
+>
+  {
+    hasPillars ? (
+      <div class="grid gap-6 md:grid-cols-3">
+        {brand.pillars.map((p) => (
+          <div class="rounded-2xl p-7 h-full"
+            style="background-color:color-mix(in srgb, var(--c-light) 6%, transparent); border:1px solid color-mix(in srgb, var(--c-light) 14%, transparent)">
+            <h3 class="text-xl font-bold" style="color:var(--c-light)">{p.title}</h3>
+            <p class="mt-3 leading-relaxed" style="color:color-mix(in srgb, var(--c-light) 82%, transparent)">{p.meaning}</p>
+            <p class="mt-4 pt-4 text-sm" style="border-top:1px solid color-mix(in srgb, var(--c-light) 16%, transparent); color:var(--c-accent)">
+              {p.proof}
+            </p>
+          </div>
+        ))}
+      </div>
+    ) : (
+      // Voice-driven fallback (pillars empty — copy fill needed).
+      <div class="grid gap-8 md:grid-cols-2">
+        <div>
+          <p class="font-head font-semibold mb-3" style="color:var(--c-accent)">We are</p>
+          <ul class="flex flex-wrap gap-2">
+            {brand.voiceWeAre.map((w) => (
+              <li class="rounded-full px-4 py-1.5 text-sm font-head font-medium"
+                style="background-color:color-mix(in srgb, var(--c-light) 10%, transparent); color:var(--c-light)">{w}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p class="font-head font-semibold mb-3" style="color:color-mix(in srgb, var(--c-light) 60%, transparent)">We are not</p>
+          <ul class="flex flex-wrap gap-2">
+            {brand.voiceWeAreNot.map((w) => (
+              <li class="rounded-full px-4 py-1.5 text-sm font-head font-medium"
+                style="border:1px solid color-mix(in srgb, var(--c-light) 24%, transparent); color:color-mix(in srgb, var(--c-light) 70%, transparent)">{w}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    )
+  }
+</Section>

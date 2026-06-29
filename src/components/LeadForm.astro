@@ -1,0 +1,133 @@
+---
+/**
+ * Conversion surface. Behavior is JS-driven (no reliance on native <form>
+ * submit): it gathers fields + UTM params + the active brand slug and POSTs
+ * JSON to /api/lead, which tags and stores the lead.
+ */
+import { brand, ACTIVE_BRAND } from "@/lib/brand";
+
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+---
+
+<div class="rounded-3xl p-7 md:p-9" style="background-color:var(--c-light); border:1px solid color-mix(in srgb, var(--c-supporting) 20%, transparent); box-shadow:0 20px 50px -30px color-mix(in srgb, var(--c-dark) 60%, transparent)">
+  {!compact && (
+    <>
+      <p class="eyebrow">Free consultation</p>
+      <h2 class="mt-2 text-2xl md:text-3xl font-extrabold" style="color:var(--c-dark)">Talk to an attorney — no pressure</h2>
+      <p class="mt-2 text-[0.97rem]" style="color:var(--c-supporting)">Tell us what's going on. We'll review it for free and tell you, plainly, what your options are.</p>
+    </>
+  )}
+
+  <div data-lead-form data-brand={ACTIVE_BRAND} class="mt-6 grid gap-4">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <label class="block">
+        <span class="text-sm font-head font-medium" style="color:var(--c-dark)">Full name</span>
+        <input name="name" type="text" autocomplete="name" required
+          class="mt-1 w-full rounded-xl px-4 py-3 outline-none"
+          style="border:1px solid color-mix(in srgb, var(--c-supporting) 35%, transparent); background:var(--c-light)" />
+      </label>
+      <label class="block">
+        <span class="text-sm font-head font-medium" style="color:var(--c-dark)">Phone</span>
+        <input name="phone" type="tel" autocomplete="tel" required
+          class="mt-1 w-full rounded-xl px-4 py-3 outline-none"
+          style="border:1px solid color-mix(in srgb, var(--c-supporting) 35%, transparent); background:var(--c-light)" />
+      </label>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <label class="block">
+        <span class="text-sm font-head font-medium" style="color:var(--c-dark)">Email</span>
+        <input name="email" type="email" autocomplete="email"
+          class="mt-1 w-full rounded-xl px-4 py-3 outline-none"
+          style="border:1px solid color-mix(in srgb, var(--c-supporting) 35%, transparent); background:var(--c-light)" />
+      </label>
+      <label class="block">
+        <span class="text-sm font-head font-medium" style="color:var(--c-dark)">Approx. debt amount</span>
+        <select name="debt_range"
+          class="mt-1 w-full rounded-xl px-4 py-3 outline-none"
+          style="border:1px solid color-mix(in srgb, var(--c-supporting) 35%, transparent); background:var(--c-light)">
+          <option value="">Prefer not to say</option>
+          <option>Under $10k</option>
+          <option>$10k–$25k</option>
+          <option>$25k–$50k</option>
+          <option>$50k–$100k</option>
+          <option>$100k+</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="block">
+      <span class="text-sm font-head font-medium" style="color:var(--c-dark)">What's going on?</span>
+      <textarea name="message" rows="3"
+        class="mt-1 w-full rounded-xl px-4 py-3 outline-none"
+        style="border:1px solid color-mix(in srgb, var(--c-supporting) 35%, transparent); background:var(--c-light)"></textarea>
+    </label>
+
+    <button type="button" data-lead-submit class="btn btn-accent w-full">Request my free consult</button>
+
+    <p data-lead-status role="status" aria-live="polite" class="text-sm hidden" style="color:var(--c-primary)"></p>
+    <p class="text-xs" style="color:var(--c-supporting)">
+      By submitting you agree to be contacted about your inquiry. Submitting does not create an attorney-client relationship.
+    </p>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector("[data-lead-form]") as HTMLElement | null;
+  if (root) {
+    const btn = root.parentElement!.querySelector("[data-lead-submit]") as HTMLButtonElement;
+    const status = root.parentElement!.querySelector("[data-lead-status]") as HTMLElement;
+
+    const utm = () => {
+      const p = new URLSearchParams(location.search);
+      const out: Record<string, string> = {};
+      for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "variant", "gclid", "fbclid"]) {
+        const v = p.get(k);
+        if (v) out[k] = v;
+      }
+      return out;
+    };
+
+    const show = (msg: string, ok: boolean) => {
+      status.textContent = msg;
+      status.classList.remove("hidden");
+      status.style.color = ok ? "var(--c-primary)" : "var(--c-accent)";
+    };
+
+    btn?.addEventListener("click", async () => {
+      const fields = root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input,textarea,select");
+      const data: Record<string, string> = {};
+      let valid = true;
+      fields.forEach((f) => {
+        if (f.hasAttribute("required") && !f.value.trim()) {
+          valid = false;
+          f.style.borderColor = "var(--c-accent)";
+        } else if (f.name) {
+          data[f.name] = f.value.trim();
+        }
+      });
+      if (!valid) return show("Please add your name and phone so we can reach you.", false);
+
+      btn.disabled = true;
+      btn.textContent = "Sending…";
+      try {
+        const res = await fetch("/api/lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, brand: root.dataset.brand, ...utm(), page: location.pathname }),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        show("Got it — an attorney's team will reach out shortly.", true);
+        root.querySelectorAll("input,textarea,select").forEach((f) => ((f as HTMLInputElement).value = ""));
+        if (window.fbq) window.fbq("track", "Lead");
+        if (window.gtag) window.gtag("event", "generate_lead");
+      } catch {
+        show("Something went wrong. Please call us or try again.", false);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Request my free consult";
+      }
+    });
+  }
+</script>

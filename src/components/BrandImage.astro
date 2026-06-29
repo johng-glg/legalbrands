@@ -1,0 +1,34 @@
+---
+/**
+ * Renders a brand photo asset, or a palette-colored placeholder (gradient of
+ * primary -> dark with the brand initial) when the file is missing.
+ */
+import { brand } from "@/lib/brand";
+import { asset, type BrandAsset } from "@/lib/assets";
+
+interface Props {
+  file: Extract<BrandAsset, "hero.jpg" | "secondary.jpg">;
+  alt?: string;
+  class?: string;
+}
+const { file, alt = "", class: className = "" } = Astro.props;
+const src = asset(file);
+const initial = brand.name.charAt(0);
+---
+
+{
+  src ? (
+    <img src={src} alt={alt} class={`object-cover ${className}`} loading="lazy" />
+  ) : (
+    <div
+      class={`grid place-items-center ${className}`}
+      style="background-image:linear-gradient(135deg, var(--c-primary), var(--c-dark));"
+      role="img"
+      aria-label={alt || `${brand.name} placeholder image`}
+    >
+      <span class="font-head font-extrabold opacity-25" style="color:var(--c-light); font-size:clamp(4rem,12vw,9rem)">
+        {initial}
+      </span>
+    </div>
+  )
+}

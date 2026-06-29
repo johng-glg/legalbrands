@@ -1,0 +1,29 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/Section.astro";
+import LeadForm from "@/components/LeadForm.astro";
+import { brand } from "@/lib/brand";
+
+const phone = import.meta.env.PUBLIC_INTAKE_PHONE;
+---
+
+<BaseLayout title="Free consultation" description={`Talk to an attorney at ${brand.name} — free.`}>
+  <Section eyebrow="Free consultation" title="Talk to a real attorney — free">
+    <div class="grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+      <div>
+        <p class="text-lg leading-relaxed" style="color:var(--c-supporting)">{brand.positioning}</p>
+        <ul class="mt-6 grid gap-3 text-[0.97rem]" style="color:var(--c-dark)">
+          <li>• A licensed attorney reviews your situation</li>
+          <li>• Honest, plain-language options — no sales script</li>
+          <li>• We can take over collector contact right away</li>
+        </ul>
+        {phone && (
+          <a href={`tel:${phone}`} class="mt-7 inline-block font-head font-extrabold text-2xl" style="color:var(--c-primary)">
+            {phone}
+          </a>
+        )}
+      </div>
+      <LeadForm compact />
+    </div>
+  </Section>
+</BaseLayout>

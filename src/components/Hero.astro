@@ -1,0 +1,73 @@
+---
+/**
+ * Home hero. The framing is keyed to the brand's `funnel` role:
+ *   top    -> relief-led      (make it stop / breathe)
+ *   mid    -> plan/roadmap-led (a clear way out / get back in control)
+ *   bottom -> urgency-led      (you've been sued / court-deadline)
+ *
+ * Paid landing pages can deep-link a different framing with ?variant=top|mid|bottom
+ * (the ad's promise), resolved client-side without changing the build.
+ */
+import { brand } from "@/lib/brand";
+import Button from "@/components/Button.astro";
+import BrandImage from "@/components/BrandImage.astro";
+
+const consult = import.meta.env.PUBLIC_CONSULT_URL;
+
+type Role = "top" | "mid" | "bottom";
+const frames: Record<Role, { eyebrow: string; sub: string }> = {
+  top: { eyebrow: "Debt-relief law firm", sub: brand.oneLiner },
+  mid: { eyebrow: "A clear, attorney-led plan", sub: brand.positioning },
+  bottom: { eyebrow: "Sued or facing a deadline?", sub: brand.positioning },
+};
+
+const role = brand.funnel as Role;
+const frame = frames[role];
+---
+
+<section class="relative overflow-hidden" style="background-color:var(--c-light)">
+  <div class="container-rail grid items-center gap-10 py-16 md:py-24 lg:grid-cols-[1.05fr_0.95fr]">
+    <div>
+      <p class="eyebrow" data-hero-eyebrow>{frame.eyebrow}</p>
+      <h1 class="mt-4 text-[clamp(2.4rem,6vw,4.25rem)] font-extrabold" style="color:var(--c-dark)">
+        {brand.taglinePrimary}
+      </h1>
+      <p class="mt-5 max-w-xl text-lg md:text-xl" style="color:var(--c-supporting)" data-hero-sub>
+        {frame.sub}
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <Button href={consult || "/contact"} variant="accent">Get a free consultation</Button>
+        <Button href="/how-it-works" variant="outline">How it works</Button>
+      </div>
+
+      <ul class="mt-9 flex flex-wrap gap-x-7 gap-y-2 text-sm font-head font-medium" style="color:var(--c-supporting)">
+        <li>Real, licensed attorneys</li>
+        <li>Free, no-pressure consult</li>
+        <li>We handle the collectors</li>
+      </ul>
+    </div>
+
+    <div class="relative">
+      <BrandImage
+        file="hero.jpg"
+        alt={`${brand.name} — ${brand.taglinePrimary}`}
+        class="aspect-[4/5] w-full rounded-3xl shadow-xl"
+      />
+    </div>
+  </div>
+
+  <script
+    is:inline
+    define:vars={{ frames, fallback: role }}
+  >
+    const v = new URLSearchParams(location.search).get("variant");
+    if (v && frames[v]) {
+      const f = frames[v];
+      const eb = document.querySelector("[data-hero-eyebrow]");
+      const sub = document.querySelector("[data-hero-sub]");
+      if (eb) eb.textContent = f.eyebrow;
+      if (sub) sub.textContent = f.sub;
+    }
+  </script>
+</section>

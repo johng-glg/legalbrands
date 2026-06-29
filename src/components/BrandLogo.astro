@@ -1,0 +1,28 @@
+---
+/**
+ * Renders the brand's logo.svg if present, else a wordmark fallback that
+ * still reads on-brand (primary color, headline font).
+ */
+import { brand } from "@/lib/brand";
+import { asset } from "@/lib/assets";
+
+interface Props {
+  class?: string;
+  reverse?: boolean; // for dark backgrounds
+}
+const { class: className = "", reverse = false } = Astro.props;
+const logo = asset("logo.svg");
+---
+
+{
+  logo ? (
+    <img src={logo} alt={`${brand.name} logo`} class={`h-9 w-auto ${className}`} />
+  ) : (
+    <span
+      class={`font-head font-extrabold text-xl tracking-tight ${className}`}
+      style={`color:${reverse ? "var(--c-light)" : "var(--c-primary)"}`}
+    >
+      {brand.name}
+    </span>
+  )
+}

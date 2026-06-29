@@ -1,0 +1,18 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import WhyUs from "@/components/WhyUs.astro";
+import Results from "@/components/Results.astro";
+import Section from "@/components/Section.astro";
+import LeadForm from "@/components/LeadForm.astro";
+import { brand } from "@/lib/brand";
+---
+
+<BaseLayout title="Why us" description={`Why choose ${brand.name}.`}>
+  <WhyUs />
+  <Results />
+  <Section tone="tint">
+    <div class="mx-auto max-w-2xl">
+      <LeadForm />
+    </div>
+  </Section>
+</BaseLayout>

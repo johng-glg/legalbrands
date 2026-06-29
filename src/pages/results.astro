@@ -1,0 +1,18 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Results from "@/components/Results.astro";
+import WhyUs from "@/components/WhyUs.astro";
+import Section from "@/components/Section.astro";
+import LeadForm from "@/components/LeadForm.astro";
+import { brand } from "@/lib/brand";
+---
+
+<BaseLayout title="Results & credibility" description={`The credibility behind ${brand.name}.`}>
+  <Results />
+  <WhyUs />
+  <Section tone="tint">
+    <div class="mx-auto max-w-2xl">
+      <LeadForm />
+    </div>
+  </Section>
+</BaseLayout>
